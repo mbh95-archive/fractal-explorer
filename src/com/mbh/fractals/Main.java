@@ -37,5 +37,7 @@ public class Main {
 
         /* Make sure the user can see the JFrame */
         frame.setVisible(true);
+
+        fractalExplorerComponent.run();
     }
 }

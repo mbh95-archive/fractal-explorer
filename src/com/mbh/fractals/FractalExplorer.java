@@ -10,8 +10,11 @@ import java.awt.image.BufferedImage;
  */
 public class FractalExplorer extends Canvas implements Runnable {
 
+    private Renderer renderer;
+
     public FractalExplorer(Container parent) {
         this.setSize(parent.getSize());
+        this.renderer = new Renderer();
     }
 
     @Override
@@ -23,13 +26,14 @@ public class FractalExplorer extends Canvas implements Runnable {
             long frameEnd = System.nanoTime() + frameLength;
 
             /* Update all subsystems */
-
+            RenderParams renderParams = new RenderParams(this.getWidth(), this.getHeight(), 0.0, 0.0, 2.0, 128);
+            renderer.update(renderParams);
             do {
-                System.out.println("Stepping renderer");
+                this.renderer.step();
             } while (System.nanoTime() < frameEnd);
 
             Graphics g = bufferStrat.getDrawGraphics();
-            //g.drawImage(backBuffer, 0, 0, null);
+            g.drawImage(this.renderer.getResult(), 0, 0, null);
             g.dispose();
             bufferStrat.show();
         }
