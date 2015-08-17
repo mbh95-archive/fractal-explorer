@@ -4,8 +4,8 @@ public class RenderParams {
 
     public final int width, height;
     public final double cx, cy;
-    private final double realDomain;
-    private final int maxIterations;
+    public final double realDomain;
+    public final int maxIterations;
 
     public RenderParams(int width, int height, double cx, double cy, double realDomain, int maxIterations) {
         this.width = width;

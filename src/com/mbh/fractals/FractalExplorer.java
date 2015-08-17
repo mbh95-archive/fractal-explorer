@@ -1,8 +1,10 @@
 package com.mbh.fractals;
 
+import com.mbh.fractals.renderer.ActiveRenderer;
+import com.mbh.fractals.renderer.IRenderer;
+
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
 
 /**
  * FractalExplorer component.
@@ -10,11 +12,11 @@ import java.awt.image.BufferedImage;
  */
 public class FractalExplorer extends Canvas implements Runnable {
 
-    private Renderer renderer;
+    private IRenderer renderer;
 
     public FractalExplorer(Container parent) {
         this.setSize(parent.getSize());
-        this.renderer = new Renderer();
+        this.renderer = new ActiveRenderer();
     }
 
     @Override
@@ -27,13 +29,21 @@ public class FractalExplorer extends Canvas implements Runnable {
 
             /* Update all subsystems */
             RenderParams renderParams = new RenderParams(this.getWidth(), this.getHeight(), 0.0, 0.0, 2.0, 128);
-            renderer.update(renderParams);
+            renderer.updateParams(renderParams);
             do {
-                this.renderer.step();
+                if (!renderer.isDone()) {
+                    renderer.step();
+                } else {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             } while (System.nanoTime() < frameEnd);
 
             Graphics g = bufferStrat.getDrawGraphics();
-            g.drawImage(this.renderer.getResult(), 0, 0, null);
+            g.drawImage(renderer.getResult(), 0, 0, null);
             g.dispose();
             bufferStrat.show();
         }
