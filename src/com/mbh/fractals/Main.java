@@ -31,8 +31,11 @@ public class Main {
         /* Center the JFrame on the screen */
         frame.setLocationRelativeTo(null);
 
+        /* Create the FractalExplorer component and add it to the JFrame */
+        FractalExplorer fractalExplorerComponent = new FractalExplorer(frame.getContentPane());
+        frame.getContentPane().add(fractalExplorerComponent);
 
-
+        /* Make sure the user can see the JFrame */
         frame.setVisible(true);
     }
 }
