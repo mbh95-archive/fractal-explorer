@@ -22,7 +22,7 @@ public class Lookup implements IColorScheme {
 
     public Lookup(String path, int x, int y, int w, int h, boolean absolute) {
         BufferedImage fin = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        fin.getGraphics().drawImage(ImageUtils.loadImage(path), 0, 0, null);
+        fin.getGraphics().drawImage(ImageUtils.loadImage(path), -x, -y, null);
         this.pixels = ImageUtils.getRaster(fin);
         this.absolute = absolute;
     }

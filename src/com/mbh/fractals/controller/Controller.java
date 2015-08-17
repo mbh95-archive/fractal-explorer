@@ -4,6 +4,7 @@ import com.mbh.fractals.FractalExplorer;
 import com.mbh.fractals.RenderParams;
 import com.mbh.fractals.colorschemes.IColorScheme;
 import com.mbh.fractals.colorschemes.LinearGradient;
+import com.mbh.fractals.colorschemes.Lookup;
 import com.mbh.fractals.functions.IFunction;
 import com.mbh.fractals.functions.Mandelbrot;
 import com.mbh.input.Keyboard;
@@ -21,6 +22,23 @@ public class Controller implements IController {
     private int maxIterations;
     private IFunction function;
     private IColorScheme colorScheme;
+    private int colorIndex = 0;
+    private IColorScheme[] colorSchemes = new IColorScheme[]{
+            new Lookup("res/rainbows.png", false),
+            new Lookup("res/rainbows.png", true),
+            new LinearGradient(Color.BLACK, Color.WHITE),
+            new LinearGradient(Color.WHITE, Color.BLACK),
+            new Lookup("res/blue-black.png", 0, 0, 319, 1, false),
+            new Lookup("res/blue-black.png", 0, 0, 319, 1, true),
+            new Lookup("res/sine.png", 0, 0, 300, 1, false),
+            new Lookup("res/sine.png", 0, 0, 300, 1, true),
+            new Lookup("res/square.png", false),
+            new Lookup("res/square.png", true),
+            new Lookup("res/purple and white.png", false),
+            new Lookup("res/purple and white.png", true),
+            new Lookup("res/blue and brown.png", false),
+            new Lookup("res/blue and brown.png", true)
+    };
 
     private double movementSensitivity = 0.02;
     private int[] upKeys = new int[]{VK_W, VK_UP, VK_KP_UP};
@@ -28,16 +46,21 @@ public class Controller implements IController {
     private int[] leftKeys = new int[]{VK_A, VK_LEFT, VK_KP_LEFT};
     private int[] rightKeys = new int[]{VK_D, VK_RIGHT, VK_KP_RIGHT};
 
+    private Toggle rmbToggle = new Toggle();
+
     private int[] zoomInKeys = new int[]{VK_I};
     private int[] zoomOutKeys = new int[]{VK_O};
 
-    private int[] doubleDetailKeys = new int[] {VK_E};
-    private int[] halfDetailKeys = new int[] {VK_Q};
+    private int[] doubleDetailKeys = new int[]{VK_E};
+    private int[] halfDetailKeys = new int[]{VK_Q};
 
     private Toggle doubleDetailToggle = new Toggle();
     private Toggle halfDetailToggle = new Toggle();
 
-    private Toggle rmbToggle = new Toggle();
+    private int[] colorUpKeys = new int[]{VK_PERIOD};
+    private int[] colorDownKeys = new int[]{VK_COMMA};
+    private Toggle colorUpToggle = new Toggle();
+    private Toggle colorDownToggle = new Toggle();
 
     public Controller(FractalExplorer parent) {
         this.parent = parent;
@@ -70,16 +93,25 @@ public class Controller implements IController {
 
 
         if (doubleDetailToggle.getDelta(Keyboard.isAtLeastOneKeyDown(doubleDetailKeys))) {
-            maxIterations = Math.min(1<<16, maxIterations*2);
+            maxIterations = Math.min(1 << 16, maxIterations * 2);
         }
-        if(halfDetailToggle.getDelta(Keyboard.isAtLeastOneKeyDown(halfDetailKeys))) {
+        if (halfDetailToggle.getDelta(Keyboard.isAtLeastOneKeyDown(halfDetailKeys))) {
             maxIterations = Math.max(1, maxIterations / 2);
         }
 
         if (rmbToggle.getDelta(Mouse.rightButtonDown()))
             moveToScreen(Mouse.getX(), Mouse.getY());
 
-        return new RenderParams(parent.getWidth(), parent.getHeight(), cx, cy, realDomain, maxIterations, function, colorScheme);
+        if (colorUpToggle.getDelta(Keyboard.isAtLeastOneKeyDown(colorUpKeys))) {
+            colorIndex++;
+            colorIndex %= colorSchemes.length;
+        }
+        if (colorDownToggle.getDelta(Keyboard.isAtLeastOneKeyDown(colorDownKeys))) {
+            colorIndex--;
+            if (colorIndex < 0)
+                colorIndex = colorSchemes.length - 1;
+        }
+        return new RenderParams(parent.getWidth(), parent.getHeight(), cx, cy, realDomain, maxIterations, function, colorSchemes[colorIndex]);
     }
 
     private void moveTo(double cx, double cy) {
@@ -111,6 +143,7 @@ public class Controller implements IController {
 
     private abstract class Delta<T> {
         T old;
+
         public abstract T getDelta(T cur);
     }
 
