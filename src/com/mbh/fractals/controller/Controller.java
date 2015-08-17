@@ -31,13 +31,20 @@ public class Controller implements IController {
     private int[] zoomInKeys = new int[]{VK_I};
     private int[] zoomOutKeys = new int[]{VK_O};
 
+    private int[] doubleDetailKeys = new int[] {VK_E};
+    private int[] halfDetailKeys = new int[] {VK_Q};
+
+    private Toggle doubleDetailToggle = new Toggle();
+    private Toggle halfDetailToggle = new Toggle();
+
+    private Toggle rmbToggle = new Toggle();
 
     public Controller(FractalExplorer parent) {
         this.parent = parent;
         this.cx = 0.0;
         this.cy = 0.0;
         this.realDomain = 2.0;
-        this.maxIterations = 128;
+        this.maxIterations = (1 << 6);
         this.function = new Mandelbrot();
         this.colorScheme = new LinearGradient(Color.BLACK, Color.BLUE);
         Keyboard.bindTo(parent);
@@ -46,15 +53,83 @@ public class Controller implements IController {
 
     @Override
     public RenderParams getRenderParams() {
+
         if (Keyboard.isAtLeastOneKeyDown(upKeys))
-            cy += movementSensitivity * realDomain;
+            translate(0, movementSensitivity * realDomain);
         if (Keyboard.isAtLeastOneKeyDown(downKeys))
-            cy -= movementSensitivity * realDomain;
+            translate(0, -movementSensitivity * realDomain);
         if (Keyboard.isAtLeastOneKeyDown(leftKeys))
-            cx -= movementSensitivity * realDomain;
+            translate(-movementSensitivity * realDomain, 0);
         if (Keyboard.isAtLeastOneKeyDown(rightKeys))
-            cx += movementSensitivity * realDomain;
+            translate(movementSensitivity * realDomain, 0);
+
+        if (Keyboard.isAtLeastOneKeyDown(zoomInKeys))
+            zoom(0.9);
+        if (Keyboard.isAtLeastOneKeyDown(zoomOutKeys))
+            zoom(1.0 / 0.9);
+
+
+        if (doubleDetailToggle.getDelta(Keyboard.isAtLeastOneKeyDown(doubleDetailKeys))) {
+            maxIterations = Math.min(1<<16, maxIterations*2);
+        }
+        if(halfDetailToggle.getDelta(Keyboard.isAtLeastOneKeyDown(halfDetailKeys))) {
+            maxIterations = Math.max(1, maxIterations / 2);
+        }
+
+        if (rmbToggle.getDelta(Mouse.rightButtonDown()))
+            moveToScreen(Mouse.getX(), Mouse.getY());
 
         return new RenderParams(parent.getWidth(), parent.getHeight(), cx, cy, realDomain, maxIterations, function, colorScheme);
+    }
+
+    private void moveTo(double cx, double cy) {
+        cx = cx;
+        cy = cy;
+    }
+
+    private void moveToScreen(int screenX, int screenY) {
+        cx = screenToDomainX(screenX);
+        cy = screenToDomainY(screenY);
+    }
+
+    private void translate(double dx, double dy) {
+        cx += dx;
+        cy += dy;
+    }
+
+    private void zoom(double factor) {
+        realDomain *= factor;
+    }
+
+    private double screenToDomainX(int screenX) {
+        return cx + (screenX - parent.getWidth() / 2.0) * realDomain / parent.getWidth();
+    }
+
+    private double screenToDomainY(int screenY) {
+        return cy + (-screenY + parent.getHeight() / 2.0) * realDomain / parent.getWidth();
+    }
+
+    private abstract class Delta<T> {
+        T old;
+        public abstract T getDelta(T cur);
+    }
+
+    private class Toggle extends Delta<Boolean> {
+        @Override
+        public Boolean getDelta(Boolean cur) {
+            boolean temp = cur && (cur != old);
+            old = cur;
+            return temp;
+        }
+    }
+
+    private class DeltaD extends Delta<Double> {
+
+        @Override
+        public Double getDelta(Double cur) {
+            double temp = cur - old;
+            old = cur;
+            return temp;
+        }
     }
 }

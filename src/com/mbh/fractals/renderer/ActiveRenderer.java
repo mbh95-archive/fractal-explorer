@@ -36,8 +36,8 @@ public class ActiveRenderer implements IRenderer {
         int cxScreen = indX * blockSize + blockSize / 2;
         int cyScreen = indY * blockSize + blockSize / 2;
 
-        double cRe = lastParams.cx + RenderUtils.screenToComplexX(cxScreen, lastParams);
-        double cIm = lastParams.cy + RenderUtils.screenToComplexY(cyScreen, lastParams);
+        double cRe = lastParams.cx + RenderUtils.screenToDomainX(cxScreen, lastParams);
+        double cIm = lastParams.cy + RenderUtils.screenToDomainY(cyScreen, lastParams);
 
         int fResult = lastParams.function.f(cRe, cIm, lastParams.maxIterations);
         Color currentColor = lastParams.colorScheme.getColor(fResult, lastParams.maxIterations);
