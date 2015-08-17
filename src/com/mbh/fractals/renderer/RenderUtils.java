@@ -12,6 +12,6 @@ public final class RenderUtils {
     }
 
     public static double screenToComplexY(int screenY, RenderParams params) {
-        return (screenY - params.height / 2.0) * params.realDomain / params.width;
+        return (-screenY + params.height / 2.0) * params.realDomain / params.width;
     }
 }

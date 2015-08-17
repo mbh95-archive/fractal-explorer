@@ -1,5 +1,7 @@
 package com.mbh.fractals;
 
+import com.mbh.fractals.controller.Controller;
+import com.mbh.fractals.controller.IController;
 import com.mbh.fractals.renderer.ActiveRenderer;
 import com.mbh.fractals.renderer.IRenderer;
 
@@ -12,10 +14,12 @@ import java.awt.image.BufferStrategy;
  */
 public class FractalExplorer extends Canvas implements Runnable {
 
+    private IController controller;
     private IRenderer renderer;
 
     public FractalExplorer(Container parent) {
         this.setSize(parent.getSize());
+        this.controller = new Controller(this);
         this.renderer = new ActiveRenderer();
     }
 
@@ -28,7 +32,7 @@ public class FractalExplorer extends Canvas implements Runnable {
             long frameEnd = System.nanoTime() + frameLength;
 
             /* Update all subsystems */
-            RenderParams renderParams = new RenderParams(this.getWidth(), this.getHeight(), 0.0, 0.0, 2.0, 128);
+            RenderParams renderParams = controller.getRenderParams();
             renderer.updateParams(renderParams);
             do {
                 if (!renderer.isDone()) {

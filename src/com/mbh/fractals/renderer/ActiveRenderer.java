@@ -33,14 +33,16 @@ public class ActiveRenderer implements IRenderer {
             return;
         }
 
-        /* Rendering logic goes here */
         int cxScreen = indX * blockSize + blockSize / 2;
         int cyScreen = indY * blockSize + blockSize / 2;
 
         double cRe = lastParams.cx + RenderUtils.screenToComplexX(cxScreen, lastParams);
         double cIm = lastParams.cy + RenderUtils.screenToComplexY(cyScreen, lastParams);
 
-        /* TODO: Color computation and actual renderering */
+        int fResult = lastParams.function.f(cRe, cIm, lastParams.maxIterations);
+        Color currentColor = lastParams.colorScheme.getColor(fResult, lastParams.maxIterations);
+        backBufferGraphics.setColor(currentColor);
+        backBufferGraphics.fillRect(indX * blockSize, indY * blockSize, blockSize, blockSize);
 
         indX++;
         if (indX * blockSize >= lastParams.width) {
