@@ -1,6 +1,8 @@
 package com.mbh.fractals.renderer;
 
-import com.mbh.fractals.RenderParams;
+import com.mbh.fractals.common.FunctionParams;
+import com.mbh.fractals.common.RenderParams;
+import com.mbh.math.Complex;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -39,8 +41,8 @@ public class ActiveRenderer implements IRenderer {
         double cRe = lastParams.cx + RenderUtils.screenToDomainX(cxScreen, lastParams);
         double cIm = lastParams.cy + RenderUtils.screenToDomainY(cyScreen, lastParams);
 
-        int fResult = lastParams.function.f(cRe, cIm, lastParams.maxIterations);
-        Color currentColor = lastParams.colorScheme.getColor(fResult, lastParams.maxIterations);
+        FunctionParams params = new FunctionParams(new Complex(cRe, cIm), lastParams.maxIterations);
+        Color currentColor = lastParams.colorScheme.getColor(lastParams.function.f(params));
         backBufferGraphics.setColor(currentColor);
         backBufferGraphics.fillRect(indX * blockSize, indY * blockSize, blockSize, blockSize);
 

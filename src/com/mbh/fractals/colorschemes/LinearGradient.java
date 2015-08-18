@@ -1,6 +1,8 @@
 package com.mbh.fractals.colorschemes;
 
 
+import com.mbh.fractals.common.FunctionResult;
+
 import java.awt.*;
 
 public class LinearGradient implements IColorScheme {
@@ -19,8 +21,8 @@ public class LinearGradient implements IColorScheme {
 
 
     @Override
-    public Color getColor(int f, int N) {
-        double Z = (double) f / (double) N;
+    public Color getColor(FunctionResult f) {
+        double Z = (double) f.escapeIterations / (double) f.functionParams.maxIterations;
         int R = (int) Math.round(aR * Z + bR * (1.0 - Z));
         int G = (int) Math.round(aG * Z + bG * (1.0 - Z));
         int B = (int) Math.round(aB * Z + bB * (1.0 - Z));

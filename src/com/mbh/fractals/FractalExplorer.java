@@ -1,5 +1,6 @@
 package com.mbh.fractals;
 
+import com.mbh.fractals.common.RenderParams;
 import com.mbh.fractals.controller.Controller;
 import com.mbh.fractals.controller.IController;
 import com.mbh.fractals.renderer.ActiveRenderer;

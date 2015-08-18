@@ -1,7 +1,9 @@
 package com.mbh.fractals.colorschemes;
 
+import com.mbh.fractals.common.FunctionResult;
+
 import java.awt.*;
 
 public interface IColorScheme {
-    Color getColor(int f, int N);
+    Color getColor(FunctionResult f);
 }

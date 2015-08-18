@@ -1,4 +1,4 @@
-package com.mbh.fractals;
+package com.mbh.fractals.common;
 
 import com.mbh.fractals.colorschemes.IColorScheme;
 import com.mbh.fractals.functions.IFunction;

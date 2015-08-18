@@ -1,6 +1,6 @@
 package com.mbh.fractals.renderer;
 
-import com.mbh.fractals.RenderParams;
+import com.mbh.fractals.common.RenderParams;
 
 import java.awt.image.BufferedImage;
 

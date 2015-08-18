@@ -1,10 +1,10 @@
 package com.mbh.fractals.controller;
 
 import com.mbh.fractals.FractalExplorer;
-import com.mbh.fractals.RenderParams;
+import com.mbh.fractals.common.RenderParams;
 import com.mbh.fractals.colorschemes.IColorScheme;
 import com.mbh.fractals.colorschemes.LinearGradient;
-import com.mbh.fractals.colorschemes.Lookup;
+import com.mbh.fractals.colorschemes.SimpleLookup;
 import com.mbh.fractals.functions.IFunction;
 import com.mbh.fractals.functions.Mandelbrot;
 import com.mbh.input.Keyboard;
@@ -20,24 +20,22 @@ public class Controller implements IController {
     private double cx, cy;
     private double realDomain;
     private int maxIterations;
-    private IFunction function;
-    private IColorScheme colorScheme;
-    private int colorIndex = 0;
+
+    private int functionIndex;
+    private IFunction[] functions = new IFunction[] {
+            new Mandelbrot()
+    };
+
+    private int colorIndex;
     private IColorScheme[] colorSchemes = new IColorScheme[]{
-            new Lookup("res/rainbows.png", false),
-            new Lookup("res/rainbows.png", true),
+            new SimpleLookup("res/rainbows.png"),
             new LinearGradient(Color.BLACK, Color.WHITE),
             new LinearGradient(Color.WHITE, Color.BLACK),
-            new Lookup("res/blue-black.png", 0, 0, 319, 1, false),
-            new Lookup("res/blue-black.png", 0, 0, 319, 1, true),
-            new Lookup("res/sine.png", 0, 0, 300, 1, false),
-            new Lookup("res/sine.png", 0, 0, 300, 1, true),
-            new Lookup("res/square.png", false),
-            new Lookup("res/square.png", true),
-            new Lookup("res/purple and white.png", false),
-            new Lookup("res/purple and white.png", true),
-            new Lookup("res/blue and brown.png", false),
-            new Lookup("res/blue and brown.png", true)
+            new SimpleLookup("res/blue-black.png"),
+            new SimpleLookup("res/sine.png"),
+            new SimpleLookup("res/square.png"),
+            new SimpleLookup("res/purple and white.png"),
+            new SimpleLookup("res/blue and brown.png")
     };
 
     private double movementSensitivity = 0.02;
@@ -64,14 +62,18 @@ public class Controller implements IController {
 
     public Controller(FractalExplorer parent) {
         this.parent = parent;
+        loadDefaultState();
+        Keyboard.bindTo(parent);
+        Mouse.bindTo(parent);
+    }
+
+    public void loadDefaultState() {
         this.cx = 0.0;
         this.cy = 0.0;
         this.realDomain = 2.0;
-        this.maxIterations = (1 << 6);
-        this.function = new Mandelbrot();
-        this.colorScheme = new LinearGradient(Color.BLACK, Color.BLUE);
-        Keyboard.bindTo(parent);
-        Mouse.bindTo(parent);
+        this.maxIterations = 1<<6;
+        this.functionIndex = 0;
+        this.colorIndex = 0;
     }
 
     @Override
@@ -111,7 +113,7 @@ public class Controller implements IController {
             if (colorIndex < 0)
                 colorIndex = colorSchemes.length - 1;
         }
-        return new RenderParams(parent.getWidth(), parent.getHeight(), cx, cy, realDomain, maxIterations, function, colorSchemes[colorIndex]);
+        return new RenderParams(parent.getWidth(), parent.getHeight(), cx, cy, realDomain, maxIterations, functions[functionIndex], colorSchemes[colorIndex]);
     }
 
     private void moveTo(double cx, double cy) {

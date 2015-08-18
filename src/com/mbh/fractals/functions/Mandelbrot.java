@@ -1,17 +1,23 @@
 package com.mbh.fractals.functions;
 
+import com.mbh.fractals.common.FunctionParams;
+import com.mbh.fractals.common.FunctionResult;
+import com.mbh.math.Complex;
+
 public class Mandelbrot implements IFunction {
     @Override
-    public int f(double zr, double zi, int N) {
-        double cr = zr;
-        double ci = zi;
+    public FunctionResult f(FunctionParams params) {
+        double zr = params.arg.re;
+        double zi = params.arg.im;
+        double cr = params.arg.re;
+        double ci = params.arg.im;
         int n = 0;
-        while (n < N && zr * zr + zi * zi < 4.0) {
+        while (n < params.maxIterations && zr * zr + zi * zi < 4.0) {
             double temp = 2.0 * zi * zr;
             zr = cr + zr * zr - zi * zi;
             zi = ci + temp;
             n++;
         }
-        return n;
+        return new FunctionResult(new Complex(zr, zi), n, params);
     }
 }

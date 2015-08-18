@@ -1,5 +1,8 @@
 package com.mbh.fractals.functions;
 
+import com.mbh.fractals.common.FunctionParams;
+import com.mbh.fractals.common.FunctionResult;
+
 public interface IFunction {
-    int f(double zr, double zi, int N);
+    FunctionResult f(FunctionParams params);
 }
