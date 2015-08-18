@@ -22,7 +22,7 @@ public class Controller implements IController {
     private int maxIterations;
 
     private int functionIndex;
-    private IFunction[] functions = new IFunction[] {
+    private IFunction[] functions = new IFunction[]{
             new Mandelbrot()
     };
 
@@ -44,7 +44,10 @@ public class Controller implements IController {
     private int[] leftKeys = new int[]{VK_A, VK_LEFT, VK_KP_LEFT};
     private int[] rightKeys = new int[]{VK_D, VK_RIGHT, VK_KP_RIGHT};
 
+    private DeltaD mouseXDelta = new DeltaD();
+    private DeltaD mouseYDelta = new DeltaD();
     private Toggle rmbToggle = new Toggle();
+    private DeltaD mouseWheelDelta = new DeltaD();
 
     private int[] zoomInKeys = new int[]{VK_I};
     private int[] zoomOutKeys = new int[]{VK_O};
@@ -71,7 +74,7 @@ public class Controller implements IController {
         this.cx = 0.0;
         this.cy = 0.0;
         this.realDomain = 2.0;
-        this.maxIterations = 1<<6;
+        this.maxIterations = 1 << 6;
         this.functionIndex = 0;
         this.colorIndex = 0;
     }
@@ -112,6 +115,20 @@ public class Controller implements IController {
             colorIndex--;
             if (colorIndex < 0)
                 colorIndex = colorSchemes.length - 1;
+        }
+
+        if (Mouse.leftButtonDown()) {
+            double dx = mouseXDelta.getDelta(-(double) Mouse.getX() * realDomain / parent.getWidth());
+            double dy = mouseYDelta.getDelta((double) Mouse.getY() * realDomain / parent.getWidth());
+            translate(dx, dy);
+        } else {
+            mouseXDelta.reset();
+            mouseYDelta.reset();
+        }
+
+        int dScroll = mouseWheelDelta.getDelta(Mouse.getScrollWheelValue()).intValue();
+        if(dScroll != 0) {
+            zoom(Math.pow(.9, -dScroll));
         }
         return new RenderParams(parent.getWidth(), parent.getHeight(), cx, cy, realDomain, maxIterations, functions[functionIndex], colorSchemes[colorIndex]);
     }
@@ -159,12 +176,23 @@ public class Controller implements IController {
     }
 
     private class DeltaD extends Delta<Double> {
+        public DeltaD() {
+            this.old = Double.NaN;
+        }
 
         @Override
         public Double getDelta(Double cur) {
+            if (Double.isNaN(old)) {
+                old = cur;
+                return 0.0;
+            }
             double temp = cur - old;
             old = cur;
             return temp;
+        }
+
+        public void reset() {
+            this.old = Double.NaN;
         }
     }
 }
