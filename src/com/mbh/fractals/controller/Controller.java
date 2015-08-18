@@ -1,6 +1,7 @@
 package com.mbh.fractals.controller;
 
 import com.mbh.fractals.FractalExplorer;
+import com.mbh.fractals.colorschemes.OrbitGradient;
 import com.mbh.fractals.common.RenderParams;
 import com.mbh.fractals.colorschemes.IColorScheme;
 import com.mbh.fractals.colorschemes.LinearGradient;
@@ -28,6 +29,7 @@ public class Controller implements IController {
 
     private int colorIndex;
     private IColorScheme[] colorSchemes = new IColorScheme[]{
+            new OrbitGradient(Color.BLACK, Color.BLUE),
             new SimpleLookup("res/rainbows.png"),
             new LinearGradient(Color.BLACK, Color.WHITE),
             new LinearGradient(Color.WHITE, Color.BLACK),
