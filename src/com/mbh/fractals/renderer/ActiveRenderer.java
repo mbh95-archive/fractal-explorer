@@ -41,7 +41,7 @@ public class ActiveRenderer implements IRenderer {
         double cRe = lastParams.cx + RenderUtils.screenToDomainX(cxScreen, lastParams);
         double cIm = lastParams.cy + RenderUtils.screenToDomainY(cyScreen, lastParams);
 
-        FunctionParams params = new FunctionParams(new Complex(cRe, cIm), lastParams.maxIterations);
+        FunctionParams params = new FunctionParams(lastParams.maxIterations, new Complex(cRe, cIm));
         Color currentColor = lastParams.colorScheme.getColor(lastParams.function.f(params));
         backBufferGraphics.setColor(currentColor);
         backBufferGraphics.fillRect(indX * blockSize, indY * blockSize, blockSize, blockSize);

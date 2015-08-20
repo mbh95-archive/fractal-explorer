@@ -7,6 +7,7 @@ import com.mbh.fractals.colorschemes.IColorScheme;
 import com.mbh.fractals.colorschemes.LinearGradient;
 import com.mbh.fractals.colorschemes.SimpleLookup;
 import com.mbh.fractals.functions.IFunction;
+import com.mbh.fractals.functions.Julia;
 import com.mbh.fractals.functions.Mandelbrot;
 import com.mbh.input.Keyboard;
 import com.mbh.input.Mouse;
@@ -24,12 +25,13 @@ public class Controller implements IController {
 
     private int functionIndex;
     private IFunction[] functions = new IFunction[]{
-            new Mandelbrot()
+            new Mandelbrot(),
+            new Julia(0, 0)
     };
 
     private int colorIndex;
     private IColorScheme[] colorSchemes = new IColorScheme[]{
-            new OrbitGradient(Color.BLACK, Color.BLUE),
+            new OrbitGradient(),
             new SimpleLookup("res/rainbows.png"),
             new LinearGradient(Color.BLACK, Color.WHITE),
             new LinearGradient(Color.WHITE, Color.BLACK),
@@ -64,6 +66,12 @@ public class Controller implements IController {
     private int[] colorDownKeys = new int[]{VK_COMMA};
     private Toggle colorUpToggle = new Toggle();
     private Toggle colorDownToggle = new Toggle();
+
+
+    private int[] functionUpKeys = new int[]{VK_R};
+    private int[] functionDownKeys = new int[]{VK_F};
+    private Toggle functionUpToggle = new Toggle();
+    private Toggle functionDownToggle = new Toggle();
 
     public Controller(FractalExplorer parent) {
         this.parent = parent;
@@ -129,10 +137,28 @@ public class Controller implements IController {
         }
 
         int dScroll = mouseWheelDelta.getDelta(Mouse.getScrollWheelValue()).intValue();
-        if(dScroll != 0) {
+        if (dScroll != 0) {
             zoom(Math.pow(.9, -dScroll));
         }
-        return new RenderParams(parent.getWidth(), parent.getHeight(), cx, cy, realDomain, maxIterations, functions[functionIndex], colorSchemes[colorIndex]);
+
+        if (functionUpToggle.getDelta(Keyboard.isAtLeastOneKeyDown(functionUpKeys))) {
+            functionIndex++;
+            functionIndex %= functions.length;
+        }
+        if (functionDownToggle.getDelta(Keyboard.isAtLeastOneKeyDown(functionDownKeys))) {
+            functionIndex--;
+            if (functionIndex < 0)
+                functionIndex = functions.length - 1;
+        }
+
+        IFunction function = functions[functionIndex];
+        IColorScheme colorScheme = colorSchemes[colorIndex];
+
+        if (function instanceof Julia && Keyboard.isKeyDown(VK_J)) {
+            functions[functionIndex] = new Julia(screenToDomainX(Mouse.getX()) + cx, screenToDomainY(Mouse.getY()) + cy);
+        }
+
+        return new RenderParams(parent.getWidth(), parent.getHeight(), cx, cy, realDomain, maxIterations, function, colorScheme);
     }
 
     private void moveTo(double cx, double cy) {
@@ -172,6 +198,16 @@ public class Controller implements IController {
         @Override
         public Boolean getDelta(Boolean cur) {
             boolean temp = cur && (cur != old);
+            old = cur;
+            return temp;
+        }
+    }
+
+    private class Flip extends Delta<Boolean> {
+
+        @Override
+        public Boolean getDelta(Boolean cur) {
+            boolean temp = cur != old;
             old = cur;
             return temp;
         }

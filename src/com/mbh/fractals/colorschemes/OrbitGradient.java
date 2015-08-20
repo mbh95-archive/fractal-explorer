@@ -5,10 +5,14 @@ import com.mbh.fractals.common.FunctionResult;
 import java.awt.*;
 
 public class OrbitGradient implements IColorScheme {
-    double redShift,  greenShift, blueShift;
+    double colorScale;
+    double redShift, greenShift, blueShift;
     double redScale, greenScale, blueScale;
 
-    public OrbitGradient(Color a, Color b) {
+    public OrbitGradient() {
+
+        colorScale = 32.0;
+
         redScale = 1;
         greenScale = 1;
         blueScale = 1;
@@ -18,17 +22,18 @@ public class OrbitGradient implements IColorScheme {
         blueShift = 0.37;
     }
 
+
     @Override
     public Color getColor(FunctionResult f) {
-        if(f.escapeIterations == f.functionParams.maxIterations)
+        if (f.escapeIterations == f.functionParams.maxIterations)
             return Color.BLACK;
-        double Z = (double) f.escapeIterations / (double) f.functionParams.maxIterations;
-        double modZ = f.finalZ.re * f.finalZ.re + f.finalZ.im * f.finalZ.im;
-        double N = 1.0*f.escapeIterations - Math.log(Math.log(Math.sqrt(modZ))/Math.log(2))/Math.log(2);
 
-        int R = (int)Math.round(127.5 * Math.sin((N+redShift)*redScale) + 127.5);
-        int G = (int)Math.round(127.5 * Math.sin((N+greenShift)*greenScale)+ 127.5);
-        int B = (int)Math.round(127.5 * Math.sin((N + blueShift) * blueScale)+ 127.5);
+        double N = 1.0 * f.escapeIterations - Math.log(Math.log(f.finalZ.getLength())) / Math.log(2.0);
+        N/=(1.0*f.functionParams.maxIterations);
+        N*=colorScale;
+        int R = (int) Math.round(255.0 * (Math.sin((N + redShift) * redScale) + 1.0) / 2.0);
+        int G = (int) Math.round(255.0 * (Math.sin((N + greenShift) * greenScale) + 1.0) / 2.0);
+        int B = (int) Math.round(255.0 * (Math.sin((N + blueShift) * blueScale) + 1.0) / 2.0);
         return new Color(R, G, B);
     }
 }

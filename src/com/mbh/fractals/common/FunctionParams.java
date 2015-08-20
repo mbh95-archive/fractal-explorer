@@ -7,7 +7,7 @@ public class FunctionParams {
     public final Complex arg;
     public final int maxIterations;
 
-    public FunctionParams(Complex arg, int maxIterations) {
+    public FunctionParams(int maxIterations, Complex arg) {
         this.arg = arg;
         this.maxIterations = maxIterations;
     }
